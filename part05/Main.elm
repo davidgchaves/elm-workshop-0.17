@@ -69,7 +69,7 @@ view model =
             ]
         , input
             [ class "search-query"
-              -- TODO onInput, set the query in the model
+            , onInput SetQuery
             , defaultValue model.query
             ]
             []
@@ -85,17 +85,21 @@ viewSearchResult result =
         , a [ href ("https://github.com/" ++ result.name), target "_blank" ]
             [ text result.name ]
         , button
-            -- TODO add an onClick handler that sends a DeleteById msg
-            [ class "hide-result" ]
+            [ class "hide-result"
+            , result.id |> DeleteById |> onClick
+            ]
             [ text "X" ]
         ]
 
 
 update : Msg -> Model -> Model
 update msg model =
-    -- TODO if we get a SetQuery msg, use it to set the model's query field,
-    -- and if we get a DeleteById msg, delete the appropriate result
-    model
+    case msg of
+        DeleteById id ->
+            { model | results = model.results |> List.filter (\r -> r.id /= id) }
+
+        SetQuery newQuery ->
+            { model | query = newQuery |> Debug.log "My new query is" }
 
 
 main : Program Never
